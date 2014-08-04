@@ -10,18 +10,20 @@
 
 namespace Geomagilles\FlowManager\Tasks\Queue;
 
-use Queue;
-use Config;
+use Illuminate\Support\Facades\Queue as Queue;
+use Illuminate\Support\Facades\Config as Config;
+use Illuminate\Support\Facades\Artisan as Artisan;
 
 use Geomagilles\FlowManager\Decider\DeciderFacade as Decider;
 use Geomagilles\FlowManager\Worker\WorkerFacade as Worker;
 use Geomagilles\FlowManager\Support\Payload\Payload;
 use Geomagilles\FlowManager\Tasks\Task;
+use Geomagilles\FlowManager\Tasks\TaskInterface;
 
-class QueueTask extends Task
+class QueueTask extends Task implements TaskInterface
 {
-    protected $workerQueue = "default";
-    protected $deciderQueue = "default";
+    protected $workerQueue;
+    protected $deciderQueue;
 
     public function forWorker($payload)
     {
@@ -41,6 +43,12 @@ class QueueTask extends Task
     public function setWorkerQueue($queue)
     {
         $this->workerQueue = $queue;
+    }
+
+    public function startWorker()
+    {
+        // php artisan queue:listen --queue=$this->workerQueue
+        Artisan::call('queue:listen', array('--queue' => $this->workerQueue));
     }
 
     public function forDecider($payload, $date = null)
@@ -63,5 +71,11 @@ class QueueTask extends Task
     public function setDeciderQueue($queue)
     {
         $this->deciderQueue = $queue;
+    }
+
+    public function startDecider()
+    {
+        // php artisan queue:listen --queue=$this->deciderQueue
+        Artisan::call('queue:listen', array('--queue' => $this->deciderQueue));
     }
 }

@@ -11,7 +11,10 @@
 namespace Geomagilles\FlowManager;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Artisan as Artisan;
 
+use Geomagilles\FlowManager\Console\FlowDeciderCommand;
+use Geomagilles\FlowManager\Console\FlowWorkerCommand;
 use Geomagilles\FlowManager\Decider\Decider;
 use Geomagilles\FlowManager\Worker\Worker;
 use Geomagilles\FlowManager\Tasks\Queue\QueueConnector;
@@ -36,6 +39,21 @@ class FlowManagerServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->package('geomagilles/flowmanager', 'geomagilles/flowmanager');
+
+        // commands
+        
+        $this->app->bind('geomagilles/flowmanager::flow.decider', function($app) {
+            return new FlowDeciderCommand();
+        });
+        
+        $this->app->bind('geomagilles/flowmanager::flow.worker', function($app) {
+            return new FlowWorkerCommand();
+        });
+        
+        $this->commands(array(
+            'geomagilles/flowmanager::flow.decider',
+            'geomagilles/flowmanager::flow.worker'
+        ));
     }
 
     /**

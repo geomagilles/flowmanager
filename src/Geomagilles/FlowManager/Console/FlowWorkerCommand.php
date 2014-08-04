@@ -10,15 +10,13 @@
 
 namespace Geomagilles\FlowManager\Console;
 
-// php artisan aws-swf:listen --type=decider --list=mainTaskList
-// php artisan aws-swf:listen --type=activity --list=mainTaskList
+use Geomagilles\FlowManager\Tasks\TaskFacade as Task;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Leetix\Aws\Swf\Workflows\WorkflowListener;
-use Leetix\Aws\Swf\Activities\ActivityListener;
+use Illuminate\Console\Command;
 
-class FlowWorkerCommand extends FlowCommand
+class FlowWorkerCommand extends Command
 {
     /**
      * The console command name.
@@ -32,7 +30,7 @@ class FlowWorkerCommand extends FlowCommand
      *
      * @var string
      */
-    protected $description = 'Start a Flow worker';
+    protected $description = 'Start a Geomagilles\FlowManager worker';
 
     /**
      * Execute the console command.
@@ -41,12 +39,9 @@ class FlowWorkerCommand extends FlowCommand
      */
     public function fire()
     {
-        $swf = App::make('SwfClient');
-        $domain = Config::get('leetix.aws.swf.domain');
+        Task::startWorker();
         
-        $this->info("Starting activity worker polling on task list: ".$this->option('list'));
-        $worker = new ActivityListener($swf, $domain['name'], $this->option('list'));
-        $worker->start();
+        $this->info('Starting worker');
     }
 
     /**
@@ -66,8 +61,6 @@ class FlowWorkerCommand extends FlowCommand
      */
     protected function getOptions()
     {
-        return array(
-            array('list', 'l', InputOption::VALUE_REQUIRED, 'Name of task list to listen', null),
-        );
+        return array();
     }
 }

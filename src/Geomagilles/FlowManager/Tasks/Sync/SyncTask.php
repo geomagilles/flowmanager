@@ -26,6 +26,11 @@ class SyncTask extends Task
         Worker::fire($payload);
     }
 
+    public function startWorker()
+    {
+
+    }
+
     public function forDecider($payload)
     {
         if (is_array($payload)) {
@@ -33,5 +38,10 @@ class SyncTask extends Task
         }
 
         Decider::fire($payload);
+    }
+
+    public function startDecider()
+    {
+
     }
 }

@@ -27,4 +27,18 @@ interface TaskInterface
      * @return void
      */
     public function forDecider($payload, $date = null);
+
+    /**
+     * Start a new worker.
+     *
+     * @return void
+     */
+    public function startWorker();
+
+    /**
+     * Start a new decider.
+     *
+     * @return void
+     */
+    public function startDecider();
 }
