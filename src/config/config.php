@@ -6,7 +6,7 @@ return [
     | Default Job Driver
     |--------------------------------------------------------------------------
     |
-    | Supported: "sync", "swf", "queue"
+    | Supported: "queue", "sync" (soon "swf")
     |
     */
 
@@ -27,6 +27,12 @@ return [
         
         'queue' => [
             'driver' => 'queue',
+            'worker' => [
+                'queue'  => 'flowmanager_worker'
+            ],
+            'decider' => [
+                'queue'  => 'flowmanager_decider'
+            ]
         ],
 
         'swf' => [

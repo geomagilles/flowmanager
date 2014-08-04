@@ -35,7 +35,7 @@ class FlowManagerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package('geomagilles/flowmanager');
+        $this->package('geomagilles/flowmanager', 'geomagilles/flowmanager');
     }
 
     /**

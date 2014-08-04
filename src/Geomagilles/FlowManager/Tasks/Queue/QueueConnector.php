@@ -22,6 +22,9 @@ class QueueConnector implements ConnectorInterface
      */
     public function connect(array $config)
     {
-        return new QueueTask();
+        $task = new QueueTask();
+        $task->setDeciderQueue($config['decider']['queue']);
+        $task->setWorkerQueue($config['worker']['queue']);
+        return $task;
     }
 }

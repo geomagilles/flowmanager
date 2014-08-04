@@ -10,11 +10,11 @@
 
 namespace Geomagilles\FlowManager\Worker;
 
-use Log;
-use Decider;
 use ReflectionMethod;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Log as Log;
 
+use Geomagilles\FlowManager\Decider\DeciderFacade as Decider;
 use Geomagilles\FlowManager\Support\Facades\JobFacade;
 use Geomagilles\FlowManager\Support\Payload\Payload;
 

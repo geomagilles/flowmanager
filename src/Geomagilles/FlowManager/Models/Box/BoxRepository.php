@@ -13,7 +13,12 @@ namespace Geomagilles\FlowManager\Models\Box;
 use Geomagilles\GenericRepository\GenericRepository;
 
 use Geomagilles\FlowGraph\Factory\GraphFactory;
+use Geomagilles\FlowGraph\GraphInterface;
 
+use Geomagilles\FlowManager\Support\Adapters\FromStore\AdapterFromStore;
+use Geomagilles\FlowManager\Support\Adapters\FromStore\AdapterFromStoreInterface;
+use Geomagilles\FlowManager\Support\Adapters\ToStore\AdapterToStore;
+use Geomagilles\FlowManager\Support\Adapters\ToStore\AdapterToStoreInterface;
 use Geomagilles\FlowManager\Models\Instance\InstanceFacade as Instance;
 use Geomagilles\FlowManager\Models\Input\InputFacade as InputPoint;
 use Geomagilles\FlowManager\Models\Output\OutputFacade as OutputPoint;
@@ -25,12 +30,22 @@ use Geomagilles\FlowManager\Models\Box\BoxFacade as Box;
  */
 class BoxRepository extends GenericRepository implements BoxInterface
 {
-    public function __construct(BoxEloquent $model)
-    {
+    public function __construct(
+        BoxEloquent $model,
+        AdapterToStoreInterface $toStore = null,
+        AdapterFromStoreInterface $fromStore = null
+    ) {
         $this->model = $model;
+        $this->toStore = is_null($toStore) ? new AdapterToStore() : $toStore;
+        $this->fromStore = is_null($fromStore) ? new AdapterFromStore() : $fromStore;
     }
 
-    public function createInstance(array $data = array(), array $state = array())
+    public function store(GraphInterface $graph)
+    {
+        return $this->toStore->saveBox($graph);
+    }
+
+    public function instantiate(array $data = array(), array $state = array())
     {
         if ($this->getType() == GraphFactory::GRAPH) {
             $instance = Instance::create();
@@ -41,7 +56,7 @@ class BoxRepository extends GenericRepository implements BoxInterface
             return $instance;
         }
 
-        throw new \LogicException(sprintf('Box "%s" is not a graph', $this->getId()));
+        throw new \LogicException(sprintf('Box "%s" is not a graph, can not be instantiated', $this->getId()));
     }
 
     public function getParentGraph()

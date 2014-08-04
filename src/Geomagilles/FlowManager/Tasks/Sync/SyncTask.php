@@ -10,9 +10,8 @@
 
 namespace Geomagilles\FlowManager\Tasks\Sync;
 
-use Decider;
-use Worker;
-
+use Geomagilles\FlowManager\Decider\DeciderFacade as Decider;
+use Geomagilles\FlowManager\Worker\WorkerFacade as Worker;
 use Geomagilles\FlowManager\Support\Payload\Payload;
 use Geomagilles\FlowManager\Tasks\Task;
 
