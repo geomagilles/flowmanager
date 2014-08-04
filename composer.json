@@ -1,0 +1,30 @@
+{
+    "name": "geomagilles/flowmanager",
+    "description": "",
+    "authors": [
+        {
+            "name": "Gilles Barbier",
+            "email": "geomagilles@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*",
+        "geomagilles/flowgraph": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:geomagilles/flowgraph.git"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Geomagilles\\FlowManager\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
