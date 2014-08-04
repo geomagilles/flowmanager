@@ -10,6 +10,7 @@
 
 namespace Geomagilles\FlowManager\Tasks\Queue;
 
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Illuminate\Support\Facades\Queue as Queue;
 use Illuminate\Support\Facades\Config as Config;
 use Illuminate\Support\Facades\Artisan as Artisan;
@@ -45,10 +46,10 @@ class QueueTask extends Task implements TaskInterface
         $this->workerQueue = $queue;
     }
 
-    public function startWorker()
+    public function startWorker(ConsoleOutput $output)
     {
         // php artisan queue:listen --queue=$this->workerQueue
-        Artisan::call('queue:listen', array('--queue' => $this->workerQueue));
+        Artisan::call('queue:listen', array('--queue' => $this->workerQueue), $output);
     }
 
     public function forDecider($payload, $date = null)
@@ -73,9 +74,9 @@ class QueueTask extends Task implements TaskInterface
         $this->deciderQueue = $queue;
     }
 
-    public function startDecider()
+    public function startDecider(ConsoleOutput $output)
     {
         // php artisan queue:listen --queue=$this->deciderQueue
-        Artisan::call('queue:listen', array('--queue' => $this->deciderQueue));
+        Artisan::call('queue:listen', array('--queue' => $this->deciderQueue), $output);
     }
 }

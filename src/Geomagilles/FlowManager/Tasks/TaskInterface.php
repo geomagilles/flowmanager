@@ -10,6 +10,8 @@
 
 namespace Geomagilles\FlowManager\Tasks;
 
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 interface TaskInterface
 {
     /**
@@ -33,12 +35,12 @@ interface TaskInterface
      *
      * @return void
      */
-    public function startWorker();
+    public function startWorker(ConsoleOutput $output);
 
     /**
      * Start a new decider.
      *
      * @return void
      */
-    public function startDecider();
+    public function startDecider(ConsoleOutput $output);
 }

@@ -39,7 +39,7 @@ class FlowDeciderCommand extends Command
      */
     public function fire()
     {
-        Task::startDecider();
+        Task::startDecider($this->getOutput());
         
         $this->info('Starting decider');
     }

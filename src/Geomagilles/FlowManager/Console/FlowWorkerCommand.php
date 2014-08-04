@@ -39,7 +39,7 @@ class FlowWorkerCommand extends Command
      */
     public function fire()
     {
-        Task::startWorker();
+        Task::startWorker($this->getOutput());
         
         $this->info('Starting worker');
     }
