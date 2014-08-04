@@ -15,7 +15,7 @@ class DeciderJobs
     const START_INSTANCE  = 'StartInstance';
     const RESUME_INSTANCE = 'ResumeInstance';
     const PAUSE_INSTANCE  = 'PauseInstance';
-    const CANCEL_INSTANCE = 'CancelInstance';
+    const KILL_INSTANCE   = 'KillInstance';
     const TASK_TRIGGERED  = 'TaskTriggered';
     const TASK_COMPLETED  = 'TaskCompleted';
     const TASK_FAILED     = 'TaskFailed';

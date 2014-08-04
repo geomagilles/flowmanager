@@ -43,17 +43,17 @@ class InstanceRepository extends GenericRepository implements InstanceInterface
 
     public function dump()
     {
-        $dumper = new \FlowGraph\Dumper\GraphDumper();
+        $dumper = new \Geomagilles\FlowGraph\Dumper\GraphDumper();
         $graph = $this->getGraph();
         file_put_contents('flow_graph.dot', $dumper->dump($graph));
         
-        $dumper = new \FlowGraph\PetriGraph\Dumper\GraphDumper() ;
+        $dumper = new \Geomagilles\FlowGraph\PetriGraph\Dumper\GraphDumper() ;
         $factory = new PetriBoxFactory();
         $petriGraph = $factory->create($graph);
         $petriGraph->setState($this->getState());
         file_put_contents('flow_petrigraph.dot', $dumper->dump($petriGraph));
 
-        $dumper = new \FlowGraph\PetriNet\Dumper\GraphDumper() ;
+        $dumper = new \Geomagilles\FlowGraph\PetriNet\Dumper\GraphDumper() ;
         $petriNet = $petriGraph->getPetrinet();
         file_put_contents('flow_petrinet.dot', $dumper->dump($petriNet));
     }

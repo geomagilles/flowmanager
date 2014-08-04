@@ -10,7 +10,7 @@
 
 namespace Geomagilles\FlowManager\Models\Box;
 
-use Eloquent;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Box storage

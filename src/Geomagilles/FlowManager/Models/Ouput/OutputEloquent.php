@@ -10,7 +10,7 @@
 
 namespace Geomagilles\FlowManager\Models\Output;
 
-use Eloquent;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Output point storage

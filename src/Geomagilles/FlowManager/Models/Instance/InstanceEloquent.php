@@ -10,7 +10,7 @@
 
 namespace Geomagilles\FlowManager\Models\Instance;
 
-use Eloquent;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Instance storage

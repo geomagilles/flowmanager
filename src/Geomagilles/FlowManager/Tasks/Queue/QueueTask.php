@@ -26,30 +26,24 @@ class QueueTask extends Task implements TaskInterface
     protected $workerQueue;
     protected $deciderQueue;
 
-    public function forWorker($payload)
-    {
-        $job = __CLASS__.'@fireWorker';
-        $data = $this->toJson($payload);
-
-        Queue::push($job, $data, $this->workerQueue);
-    }
-
-    public function fireWorker($job, $data)
-    {
-        $payload = Payload::create(json_decode($data, true));
-        Worker::fire($payload);
-        $job->delete();
-    }
-
     public function setWorkerQueue($queue)
     {
         $this->workerQueue = $queue;
     }
 
-    public function startWorker(ConsoleOutput $output)
+    public function setDeciderQueue($queue)
     {
-        // php artisan queue:listen --queue=$this->workerQueue
-        Artisan::call('queue:listen', array('--queue' => $this->workerQueue), $output);
+        $this->deciderQueue = $queue;
+    }
+
+    public function forWorker($payload, $date = null)
+    {
+        $job = __CLASS__.'@fireWorker';
+        $data = $this->toJson($payload);
+
+        is_null($date) ?
+            Queue::push($job, $data, $this->workerQueue) :
+            Queue::later($date, $job, $data, $this->workerQueue);
     }
 
     public function forDecider($payload, $date = null)
@@ -62,6 +56,13 @@ class QueueTask extends Task implements TaskInterface
             Queue::later($date, $job, $data, $this->deciderQueue);
     }
 
+    public function fireWorker($job, $data)
+    {
+        $payload = Payload::create(json_decode($data, true));
+        Worker::fire($payload);
+        $job->delete();
+    }
+
     public function fireDecider($job, $data)
     {
         $payload = Payload::create(json_decode($data, true));
@@ -69,9 +70,10 @@ class QueueTask extends Task implements TaskInterface
         $job->delete();
     }
 
-    public function setDeciderQueue($queue)
+    public function startWorker(ConsoleOutput $output)
     {
-        $this->deciderQueue = $queue;
+        // php artisan queue:listen --queue=$this->workerQueue
+        Artisan::call('queue:listen', array('--queue' => $this->workerQueue), $output);
     }
 
     public function startDecider(ConsoleOutput $output)

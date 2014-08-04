@@ -10,7 +10,7 @@
 
 namespace Geomagilles\FlowManager\Models\Input;
 
-use Eloquent;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Input point storage

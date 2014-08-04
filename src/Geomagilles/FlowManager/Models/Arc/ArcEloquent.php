@@ -10,7 +10,7 @@
 
 namespace Geomagilles\FlowManager\Models\Arc;
 
-use Eloquent;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Arc storage
