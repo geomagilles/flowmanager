@@ -12,10 +12,8 @@ namespace Geomagilles\FlowManager\Models\Arc;
 
 use Geomagilles\GenericRepository\GenericRepository;
 
-use Geomagilles\FlowManager\Models\Input\InputInterface;
-use Geomagilles\FlowManager\Models\Input\InputFacade as InputPoint;
-use Geomagilles\FlowManager\Models\Output\OutputInterface;
-use Geomagilles\FlowManager\Models\Output\OutputFacade as OutputPoint;
+use Geomagilles\FlowManager\Models\Point\PointInterface;
+use Geomagilles\FlowManager\Models\Point\PointFacade as Point;
 use Geomagilles\FlowManager\Models\Box\BoxInterface;
 use Geomagilles\FlowManager\Models\Box\BoxFacade as Box;
 
@@ -39,24 +37,24 @@ class ArcRepository extends GenericRepository implements ArcInterface
         $this->model->graph()->associate($box->getModel())->save();
     }
 
-    public function getInputPoint()
+    public function getEndPoint()
     {
-        return InputPoint::wrap($this->model->input);
+        return Point::wrap($this->model->end);
     }
 
-    public function setInputPoint(InputInterface $input)
+    public function setEndPoint(PointInterface $point)
     {
-        $this->model->input()->associate($input->getModel())->save();
+        $this->model->end()->associate($point->getModel())->save();
     }
 
-    public function getOutputPoint()
+    public function getBeginPoint()
     {
-        return OutputPoint::wrap($this->model->output);
+        return Point::wrap($this->model->begin);
     }
 
-    public function setOutputPoint(OutputInterface $output)
+    public function setBeginPoint(PointInterface $point)
     {
-        $this->model->output()->associate($output->getModel())->save();
+        $this->model->begin()->associate($point->getModel())->save();
     }
 
     //
@@ -73,22 +71,22 @@ class ArcRepository extends GenericRepository implements ArcInterface
         return $this->set(__FUNCTION__, $d);
     }
 
-    public function getInputId()
+    public function getBeginPointId()
     {
         return $this->get(__FUNCTION__);
     }
 
-    public function setInputId($d)
+    public function setBeginPointId($d)
     {
         return $this->set(__FUNCTION__, $d);
     }
 
-    public function getOutputId()
+    public function getEndPointId()
     {
         return $this->get(__FUNCTION__);
     }
 
-    public function setOutputId($d)
+    public function setEndPointId($d)
     {
         return $this->set(__FUNCTION__, $d);
     }

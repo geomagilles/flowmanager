@@ -12,7 +12,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGeomagillesFlowmanagerInstancesTable extends Migration
+class GeomagillesFlowmanagerCreateInstancesTable extends Migration
 {
     /**
      * Run the migrations.

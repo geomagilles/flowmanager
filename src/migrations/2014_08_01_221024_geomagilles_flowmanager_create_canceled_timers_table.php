@@ -12,7 +12,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGeomagillesFlowmanagerInputsTable extends Migration
+class GeomagillesFlowmanagerCreateCanceledTimersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -23,9 +23,8 @@ class CreateGeomagillesFlowmanagerInputsTable extends Migration
     {
         Schema::create($this->getTableName($name), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('box_id')->nullable();
-            $table->string('name')->nullable();
-            $table->text('settings')->nullable();
+            $table->string('timer_task_id')->index();
+            $table->date('timer_date')->nullable();
             $table->timestamps();
         });
     }
@@ -47,6 +46,6 @@ class CreateGeomagillesFlowmanagerInputsTable extends Migration
      */
     private function getTableName($name)
     {
-        return is_null($name) ? 'fm_inputs' : $name;
+        return is_null($name) ? 'fm_canceled_timers' : $name;
     }
 }

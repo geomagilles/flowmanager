@@ -14,14 +14,14 @@ use Geomagilles\GenericRepository\GenericRepository;
 
 use Geomagilles\FlowGraph\Factory\GraphFactory;
 use Geomagilles\FlowGraph\GraphInterface;
+use Geomagilles\FlowGraph\PetriGraph\Factory\PetriBoxFactory;
 
 use Geomagilles\FlowManager\Support\Adapters\FromStore\AdapterFromStore;
 use Geomagilles\FlowManager\Support\Adapters\FromStore\AdapterFromStoreInterface;
 use Geomagilles\FlowManager\Support\Adapters\ToStore\AdapterToStore;
 use Geomagilles\FlowManager\Support\Adapters\ToStore\AdapterToStoreInterface;
 use Geomagilles\FlowManager\Models\Instance\InstanceFacade as Instance;
-use Geomagilles\FlowManager\Models\Input\InputFacade as InputPoint;
-use Geomagilles\FlowManager\Models\Output\OutputFacade as OutputPoint;
+use Geomagilles\FlowManager\Models\Point\PointFacade as Point;
 use Geomagilles\FlowManager\Models\Arc\ArcFacade as Arc;
 use Geomagilles\FlowManager\Models\Box\BoxFacade as Box;
 
@@ -43,6 +43,22 @@ class BoxRepository extends GenericRepository implements BoxInterface
     public function store(GraphInterface $graph)
     {
         return $this->toStore->saveBox($graph);
+    }
+
+    public function dump()
+    {
+        $dumper = new \Geomagilles\FlowGraph\Dumper\GraphDumper();
+        $graph = $this->fromStore->getBox($this);
+        file_put_contents('flow_graph.dot', $dumper->dump($graph));
+        
+        $dumper = new \Geomagilles\FlowGraph\PetriGraph\Dumper\GraphDumper() ;
+        $factory = new PetriBoxFactory();
+        $petriGraph = $factory->create($graph);
+        file_put_contents('flow_petrigraph.dot', $dumper->dump($petriGraph));
+
+        $dumper = new \Geomagilles\FlowGraph\PetriNet\Dumper\GraphDumper() ;
+        $petriNet = $petriGraph->getPetrinet();
+        file_put_contents('flow_petrinet.dot', $dumper->dump($petriNet));
     }
 
     public function instantiate(array $data = array(), array $state = array())
@@ -69,14 +85,24 @@ class BoxRepository extends GenericRepository implements BoxInterface
         $this->model->parentGraph()->associate($graph->getModel())->save();
     }
 
-    public function getOutputs()
+    public function getPoints()
     {
-        return OutputPoint::wrap($this->model->outputs);
+        return Point::wrap($this->model->points);
     }
 
     public function getInputs()
     {
-        return InputPoint::wrap($this->model->inputs);
+        return Point::wrap($this->model->inputs);
+    }
+
+    public function getOutputs()
+    {
+        return Point::wrap($this->model->outputs);
+    }
+
+    public function getTriggers()
+    {
+        return Point::wrap($this->model->triggers);
     }
 
     public function getBoxes()

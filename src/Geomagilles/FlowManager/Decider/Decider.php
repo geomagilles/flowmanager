@@ -12,7 +12,10 @@ namespace Geomagilles\FlowManager\Decider;
 
 use Illuminate\Foundation\Application;
 
+use Geomagilles\FlowGraph\PetriGraph\Exceptions\OutputNotFoundException;
+use Geomagilles\FlowGraph\PetriGraph\Exceptions\TriggerNotFoundException;
 use Geomagilles\FlowGraph\Components\Task\TaskInterface;
+
 use Geomagilles\FlowManager\Support\Payload\Payload;
 use Geomagilles\FlowManager\Engine\Engine;
 use Geomagilles\FlowManager\Engine\EngineStatus;
@@ -79,14 +82,14 @@ class Decider implements DeciderInterface
         }
     }
     
-    public function taskCompleted($instanceId, $boxId, $data, $firedCases = [], $date = null)
+    public function taskCompleted($instanceId, $boxId, $data, $output, $date = null)
     {
         $this->task->forDecider([
             'job'        => DeciderJobs::TASK_COMPLETED,
             'instanceId' => $instanceId,
             'boxId'      => $boxId,
             'data'       => $data,
-            'firedCases' => $firedCases
+            'output'     => $output
         ], $date);
     }
 
@@ -159,7 +162,7 @@ class Decider implements DeciderInterface
             $payload->instanceId,
             $payload->boxId,
             $payload->data,
-            $payload->firedCases
+            $payload->output
         );
     }
 
@@ -219,7 +222,7 @@ class Decider implements DeciderInterface
         );
     }
 
-    private function execTaskCompleted($instanceId, $boxId, $data, $firedCases)
+    private function execTaskCompleted($instanceId, $boxId, $data, $output)
     {
         // Retrieve instance
         $instance = $this->instance->getById($instanceId);
@@ -227,8 +230,12 @@ class Decider implements DeciderInterface
         $instance->setData($data);
         // Create a new engine for this instance
         $engine = new Engine($instance, $this->task);
-        // Fire triggers
-        $engine->fireTriggers($boxId, count($firedCases)==0 ? [''] : $firedCases);
+        // Fire output
+        try {
+            $engine->fireOutput($boxId, $output);
+        } catch (OutputNotFoundException $e) {
+            return $this->execTaskFailed($instanceId, $boxId, $e);
+        }
         // Save new data & state
         $instance->save();
         // Run
@@ -237,7 +244,7 @@ class Decider implements DeciderInterface
         }
     }
 
-    private function execTaskTriggered($instanceId, $boxId, $firedTriggers)
+    public function execTaskTriggered($instanceId, $boxId, $firedTriggers)
     {
         // Retrieve instance
         $instance = $this->instance->getById($instanceId);
@@ -253,14 +260,14 @@ class Decider implements DeciderInterface
         }
     }
 
-    private function execTaskFailed($instanceId, $boxId, $exception)
+    public function execTaskFailed($instanceId, $boxId, $exception)
     {
         // Retrieve instance
         $instance = $this->instance->getById($instanceId);
         // Create a new engine for this instance
         $engine = new Engine($instance, $this->task);
-        // Fire triggers
-        $engine->fireTriggers($boxId, [TaskInterface::OUTPUT_RETRY]);
+        // Fire output
+        $engine->fireOutput($boxId, TaskInterface::OUTPUT_RETRY);
         // Save new state
         $instance->save();
         // pause this instance

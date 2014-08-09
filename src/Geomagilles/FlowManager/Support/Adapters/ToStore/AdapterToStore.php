@@ -10,14 +10,17 @@
 
 namespace Geomagilles\FlowManager\Support\Adapters\ToStore;
 
+use Geomagilles\FlowGraph\Factory\GraphFactory;
 use Geomagilles\FlowGraph\Box\BoxInterface;
 use Geomagilles\FlowGraph\Arc\ArcInterface;
 use Geomagilles\FlowGraph\Point\PointInterface;
+use Geomagilles\FlowGraph\Point\InputPoint\InputPointInterface;
+use Geomagilles\FlowGraph\Point\OutputPoint\OutputPointInterface;
+use Geomagilles\FlowGraph\Point\TriggerPoint\TriggerPointInterface;
 
 use Geomagilles\FlowManager\Models\Box\BoxFacade as Box;
 use Geomagilles\FlowManager\Models\Arc\ArcFacade as Arc;
-use Geomagilles\FlowManager\Models\Input\InputFacade as InputPoint;
-use Geomagilles\FlowManager\Models\Output\OutputFacade as OutputPoint;
+use Geomagilles\FlowManager\Models\Point\PointFacade as Point;
 
 /**
  * Adapter storing FlowManager\Graph objects
@@ -43,11 +46,15 @@ class AdapterToStore implements AdapterToStoreInterface
 
         // create input points
         foreach ($box->getInputPoints() as $inputPoint) {
-            $this->saveInputPoint($inputPoint);
+            $this->savePoint($inputPoint);
         }
         // create output points
         foreach ($box->getOutputPoints() as $outputPoint) {
-            $this->saveOutputPoint($outputPoint);
+            $this->savePoint($outputPoint);
+        }
+        // create trigger points
+        foreach ($box->getTriggerPoints() as $triggerPoint) {
+            $this->savePoint($triggerPoint);
         }
 
         // save recursively if Graph
@@ -67,8 +74,8 @@ class AdapterToStore implements AdapterToStoreInterface
     protected function saveArc(ArcInterface &$arc)
     {
         $data = [
-            'outputId'      => $arc->getBeginPoint()->getId(),
-            'inputId'       => $arc->getEndPoint()->getId(),
+            'beginPointId' => $arc->getBeginPoint()->getId(),
+            'endPointId'   => $arc->getEndPoint()->getId(),
         ];
         $new = Arc::create($data);
         $arc->setId($new->getId());
@@ -76,29 +83,25 @@ class AdapterToStore implements AdapterToStoreInterface
         return $new;
     }
 
-    protected function saveInputPoint(PointInterface &$point)
+    public function savePoint(PointInterface &$point)
     {
-            $data = [
-                'name'      => $point->getName(),
-                'settings'  => json_encode($point->getSettings()),
-                'boxId'     =>  $point->getBox()->getId()
-            ];
-            $new = InputPoint::create($data);
-            $point->setId($new->getId());
+        $data = array();
+        if ($point->isInput()) {
+            $data['type'] = GraphFactory::INPUT_POINT;
+        } elseif ($point->isOutput()) {
+            $data['type'] = GraphFactory::OUTPUT_POINT;
+        } elseif ($point->isTrigger()) {
+            $data['type'] = GraphFactory::TRIGGER_POINT;
+            $data['settings'] = json_encode($point->getSettings());
+        } else {
+            throw new \Exception("Unknown point type");
+        }
+        $data['name'] = $point->getName();
+        $data['boxId'] = $point->getBox()->getId();
 
-            return $new;
-    }
+        $new = Point::create($data);
+        $point->setId($new->getId());
 
-    protected function saveOutputPoint(PointInterface &$point)
-    {
-            $data = [
-                'name'      => $point->getName(),
-                'settings'  => json_encode($point->getSettings()),
-                'boxId'     =>  $point->getBox()->getId()
-            ];
-            $new = OutputPoint::create($data);
-            $point->setId($new->getId());
-
-            return $new;
+        return $new;
     }
 }

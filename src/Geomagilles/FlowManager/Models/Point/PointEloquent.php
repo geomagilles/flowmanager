@@ -8,31 +8,36 @@
  * file that was distributed with this source code.
  */
 
-namespace Geomagilles\FlowManager\Models\Input;
+namespace Geomagilles\FlowManager\Models\Point;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Input point storage
  */
-class InputEloquent extends Eloquent
+class PointEloquent extends Eloquent
 {
-    protected $guarded = array('id', 'component_id');
+    protected $guarded = array('id');
 
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'fm_inputs';
+    protected $table = 'fm_points';
 
     public function box()
     {
         return $this->belongsTo('Geomagilles\FlowManager\Models\Box\BoxEloquent', 'box_id');
     }
 
-    public function arc()
+    public function arcFrom()
     {
-        return $this->hasOne('Geomagilles\FlowManager\Models\Arc\ArcEloquent', 'input_id');
+        return $this->hasOne('Geomagilles\FlowManager\Models\Arc\ArcEloquent', 'begin_point_id');
+    }
+
+    public function arcTo()
+    {
+        return $this->hasOne('Geomagilles\FlowManager\Models\Arc\ArcEloquent', 'end_point_id');
     }
 }

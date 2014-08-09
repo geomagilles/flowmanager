@@ -73,6 +73,9 @@ class FlowManagerServiceProvider extends ServiceProvider
 
         $this->app->bindShared('Geomagilles\FlowManager\Tasks\TaskInterface', function ($app) {
 
+            if (false !== ini_get('xdebug.max_nesting_level')) {
+                ini_set('xdebug.max_nesting_level', 50000);
+            }
             // Once we have an instance of the manager, we will register the various
             // resolvers for the job connectors. These connectors are responsible for
             // creating the classes that accept job configs and instantiate jobs.
@@ -97,9 +100,7 @@ class FlowManagerServiceProvider extends ServiceProvider
 
         $this->app->bind('Geomagilles\FlowManager\Models\Box\BoxInterface', 'Geomagilles\FlowManager\Models\Box\BoxRepository');
 
-        $this->app->bind('Geomagilles\FlowManager\Models\Input\InputInterface', 'Geomagilles\FlowManager\Models\Input\InputRepository');
-
-        $this->app->bind('Geomagilles\FlowManager\Models\Output\OutputInterface', 'Geomagilles\FlowManager\Models\Output\OutputRepository');
+        $this->app->bind('Geomagilles\FlowManager\Models\Point\PointInterface', 'Geomagilles\FlowManager\Models\Point\PointRepository');
 
         $this->app->bind('Geomagilles\FlowManager\Models\Instance\InstanceInterface', 'Geomagilles\FlowManager\Models\Instance\InstanceRepository');
     }
@@ -117,8 +118,7 @@ class FlowManagerServiceProvider extends ServiceProvider
             'Geomagilles\FlowManager\Tasks\TaskInterface',
             'Geomagilles\FlowManager\Models\Arc\ArcInterface',
             'Geomagilles\FlowManager\Models\Box\BoxInterface',
-            'Geomagilles\FlowManager\Models\Input\InputInterface',
-            'Geomagilles\FlowManager\Models\Output\OutputInterface',
+            'Geomagilles\FlowManager\Models\Point\PointInterface',
             'Geomagilles\FlowManager\Models\Instance\InstanceInterface'
         );
     }

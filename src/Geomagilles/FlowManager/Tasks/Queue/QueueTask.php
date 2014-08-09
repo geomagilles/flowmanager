@@ -41,7 +41,7 @@ class QueueTask extends Task implements TaskInterface
         $job = __CLASS__.'@fireWorker';
         $data = $this->toJson($payload);
 
-        is_null($date) ?
+        return is_null($date) ?
             Queue::push($job, $data, $this->workerQueue) :
             Queue::later($date, $job, $data, $this->workerQueue);
     }
@@ -51,7 +51,7 @@ class QueueTask extends Task implements TaskInterface
         $job = __CLASS__.'@fireDecider';
         $data = $this->toJson($payload);
         
-        is_null($date) ?
+        return is_null($date) ?
             Queue::push($job, $data, $this->deciderQueue) :
             Queue::later($date, $job, $data, $this->deciderQueue);
     }

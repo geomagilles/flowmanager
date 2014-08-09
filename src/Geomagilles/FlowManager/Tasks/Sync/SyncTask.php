@@ -10,6 +10,8 @@
 
 namespace Geomagilles\FlowManager\Tasks\Sync;
 
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 use Geomagilles\FlowManager\Decider\DeciderFacade as Decider;
 use Geomagilles\FlowManager\Worker\WorkerFacade as Worker;
 use Geomagilles\FlowManager\Support\Payload\Payload;
@@ -17,7 +19,7 @@ use Geomagilles\FlowManager\Tasks\Task;
 
 class SyncTask extends Task
 {
-    public function forWorker($payload)
+    public function forWorker($payload, $date = null)
     {
         if (is_array($payload)) {
             $payload = Payload::create($payload);
@@ -26,12 +28,12 @@ class SyncTask extends Task
         Worker::fire($payload);
     }
 
-    public function startWorker()
+    public function startWorker(ConsoleOutput $output)
     {
 
     }
 
-    public function forDecider($payload)
+    public function forDecider($payload, $date = null)
     {
         if (is_array($payload)) {
             $payload = Payload::create($payload);
@@ -40,7 +42,7 @@ class SyncTask extends Task
         Decider::fire($payload);
     }
 
-    public function startDecider()
+    public function startDecider(ConsoleOutput $output)
     {
 
     }

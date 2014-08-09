@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Geomagilles\FlowManager\Models\Input;
+namespace Geomagilles\FlowManager\Models\Point;
 
 use Illuminate\Support\Facades\Facade;
 
-class InputFacade extends Facade
+class PointFacade extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -21,6 +21,6 @@ class InputFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'Geomagilles\FlowManager\Models\Input\InputInterface';
+        return 'Geomagilles\FlowManager\Models\Point\PointInterface';
     }
 }

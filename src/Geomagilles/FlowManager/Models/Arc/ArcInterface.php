@@ -13,8 +13,7 @@ namespace Geomagilles\FlowManager\Models\Arc;
 use Geomagilles\GenericRepository\GenericRepositoryInterface;
 
 use Geomagilles\FlowManager\Models\Box\BoxInterface;
-use Geomagilles\FlowManager\Models\Input\InputInterface;
-use Geomagilles\FlowManager\Models\Output\OutputInterface;
+use Geomagilles\FlowManager\Models\Point\PointInterface;
 
 /**
  * Interface ArcInterface
@@ -34,54 +33,54 @@ interface ArcInterface extends GenericRepositoryInterface
     public function setGraph(BoxInterface $box);
 
     /**
-     * Get Arc's input point
+     * Get Arc's begin point
      * @return FlowManager\Models\Input\InputInterface
      */
-    public function getInputPoint();
+    public function getBeginPoint();
 
     /**
-     * Set Arc's input point
+     * Set Arc's begin point
      * @param FlowManager\Models\Input\InputInterface $input
      */
-    public function setInputPoint(InputInterface $input);
+    public function setBeginPoint(PointInterface $input);
 
     /**
-     * Get Arc's output point
+     * Get Arc's end point
      * @return FlowManager\Models\Output\OutputInterface
      */
-    public function getOutputPoint();
+    public function getEndPoint();
 
     /**
-     * Set Arc's output point
+     * Set Arc's end point
      * @param FlowManager\Models\Output\OutputInterface $output
      */
-    public function setOutputPoint(OutputInterface $output);
+    public function setEndPoint(PointInterface $output);
 
     //
     // ATTRIBUTES
     //
 
     /**
-     * Return Arc's inputId
+     * Get Arc's begin point id
      * @return mixed
      */
-    public function getInputId();
+    public function getBeginPointId();
 
     /**
-     * Return Arc's OutputId
+     * Set Arc's begin point id
+     * @param mixed $d
+     */
+    public function setBeginPointId($d);
+
+    /**
+     * Get Arc's end point id
      * @return mixed
      */
-    public function getOutputId();
+    public function getEndPointId();
 
     /**
-     * Set Arc's inputId
+     * Set Arc's end point id
      * @param mixed $d
      */
-    public function setInputId($d);
-
-    /**
-     * Set Arc's OutputId
-     * @param mixed $d
-     */
-    public function setOutputId($d);
+    public function setEndPointId($d);
 }

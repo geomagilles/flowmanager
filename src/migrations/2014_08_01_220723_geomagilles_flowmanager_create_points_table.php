@@ -12,7 +12,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGeomagillesFlowmanagerArcsTable extends Migration
+class GeomagillesFlowmanagerCreatePointsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -23,9 +23,10 @@ class CreateGeomagillesFlowmanagerArcsTable extends Migration
     {
         Schema::create($this->getTableName($name), function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('graph_id')->unsigned();
-            $table->integer('output_id')->unsigned();
-            $table->integer('input_id')->unsigned();
+            $table->string('type');
+            $table->string('name');
+            $table->integer('box_id')->unsigned();
+            $table->text('settings')->nullable();
             $table->timestamps();
         });
     }
@@ -47,6 +48,6 @@ class CreateGeomagillesFlowmanagerArcsTable extends Migration
      */
     private function getTableName($name)
     {
-        return is_null($name) ? 'fm_arcs' : $name;
+        return is_null($name) ? 'fm_points' : $name;
     }
 }

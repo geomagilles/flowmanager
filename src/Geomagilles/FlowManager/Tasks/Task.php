@@ -21,7 +21,7 @@ abstract class Task extends Driver implements TaskInterface
      * Fire a job for a worker.
      * 
      * @param mixed $payload
-     * @return void
+     * @return mixed job_id
      */
     abstract public function forWorker($payload);
 
@@ -29,7 +29,7 @@ abstract class Task extends Driver implements TaskInterface
      * Fire a job for a decider.
      * 
      * @param mixed $payload
-     * @return void
+     * @return mixed job_id
      */
     abstract public function forDecider($payload, $date = null);
 

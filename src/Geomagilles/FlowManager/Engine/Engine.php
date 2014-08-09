@@ -51,6 +51,7 @@ class Engine implements EngineInterface
             $p->job = $event->getBox()->getJob();
             $p->data = $event->getData();
             $p->boxId = $event->getBox()->getId();
+            $p->boxType = $event->getBox()->getType();
             $this->task->forWorker($p);
         };
         $dispatcher->addListener(BoxEvent::BEFORE_JOB, $fire);
@@ -69,6 +70,15 @@ class Engine implements EngineInterface
             $this->instance->save();
         };
         $dispatcher->addListener(GraphEvent::END, $end);
+    }
+
+    public function fireOutput($boxId, $output)
+    {
+        // apply triggers
+        $this->engine->fireOutput($boxId, $output);
+        
+        // update instance state
+        $this->instance->setState($this->engine->getState());
     }
 
     public function fireTriggers($boxId, $firedTriggers)

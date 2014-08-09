@@ -17,7 +17,7 @@ interface DeciderInterface
 {
     public function taskFailed($instanceId, $boxId, $exception, $date = null);
 
-    public function taskCompleted($instanceId, $boxId, $data, $firedCases = [], $date = null);
+    public function taskCompleted($instanceId, $boxId, $data, $output, $date = null);
     
     public function startInstance($graphId, $data = [], $date = null);
     

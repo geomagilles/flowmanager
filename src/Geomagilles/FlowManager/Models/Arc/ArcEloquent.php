@@ -31,13 +31,13 @@ class ArcEloquent extends Eloquent
         return $this->belongsTo('Geomagilles\FlowManager\Models\Box\BoxEloquent', 'graph_id');
     }
 
-    public function input()
+    public function end()
     {
-        return $this->belongsTo('Geomagilles\FlowManager\Models\Input\InputEloquent', 'input_id');
+        return $this->belongsTo('Geomagilles\FlowManager\Models\Point\PointEloquent', 'end_point_id');
     }
 
-    public function output()
+    public function begin()
     {
-        return $this->belongsTo('Geomagilles\FlowManager\Models\Output\OutputEloquent', 'output_id');
+        return $this->belongsTo('Geomagilles\FlowManager\Models\Point\PointEloquent', 'begin_point_id');
     }
 }

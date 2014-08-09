@@ -11,8 +11,6 @@
 namespace Geomagilles\FlowManager\Support\Adapters\ToStore;
 
 use Geomagilles\FlowGraph\Box\BoxInterface;
-use Geomagilles\FlowGraph\Arc\ArcInterface;
-use Geomagilles\FlowGraph\Point\PointInterface;
 
 /**
  * Interface for adapter storing FlowManager\Graph objects

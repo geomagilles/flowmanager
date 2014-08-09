@@ -10,8 +10,7 @@
 
 namespace Geomagilles\FlowManager\Support\Adapters\FromStore;
 
-use Geomagilles\FlowManager\Models\Input\InputInterface;
-use Geomagilles\FlowManager\Models\Output\OutputInterface;
+use Geomagilles\FlowManager\Models\Point\PointInterface;
 use Geomagilles\FlowManager\Models\Box\BoxInterface;
 
 use Geomagilles\FlowGraph\Factory\GraphFactoryInterface;
@@ -37,43 +36,46 @@ class AdapterFromStore implements AdapterFromStoreInterface
         if (! is_null($box->getJob())) {
             $new->setJob($box->getJob());
         }
+
         // add settings
         $new->setSettings($box->getSettings());
         
-        // add output points
-        foreach ($box->getOutputs() as $output) {
-            $out = $this->getOutputPoint($output);
-            $new->addOutputPoint($out);
+        // add points
+        foreach ($box->getPoints() as $point) {
+            $new->addPoint($this->getPoint($point));
         }
 
-        // add input points
-        foreach ($box->getInputs() as $input) {
-            $in = $this->getInputPoint($input);
-            $new->addInputPoint($in);
-        }
-
-        // get recursively if Graph
+        // if Graph: get recursively
         if ($new->isGraph()) {
             // get boxes
-
             foreach ($box->getBoxes() as $b) {
                 $new->addBox($this->getBox($b));
             }
 
             // get arcs
             foreach ($box->getArcs() as $arc) {
-                // found out output & input points
-                $out = $arc->getOutputPoint();
-                $in = $arc->getInputPoint();
+                // find begin point
+                $beginPoint = $arc->getBeginPoint();
+                $beginBox = $new->getBox($beginPoint->getBox()->getName());
+                if ($beginPoint->isOutput()) {
+                    $beginPoint = $beginBox->getOutputPoint($beginPoint->getName());
+                } elseif ($beginPoint->isTrigger()) {
+                    $beginPoint = $beginBox->getTriggerPoint($beginPoint->getName());
+                } else {
+                    throw new \Exception("Unable to find begin point");
+                }
 
-                $begin = $new->getBox($out->getBox()->getName());
-                $end = $new->getBox($in->getBox()->getName());
+                // find end point
+                $endPoint = $arc->getEndPoint();
+                $endBox   = $new->getBox($endPoint->getBox()->getName());
+                if ($endPoint->isInput()) {
+                    $endPoint = $endBox->getInputPoint($endPoint->getName());
+                } else {
+                    throw new \Exception("Unable to find end point");
+                }
 
-                $outputPoint = $begin->getOutputPoint($out->getName());
-                $inputPoint = $end->getInputPoint($in->getName());
-       
                 // create and add arc
-                $a = $this->factory->createArc($outputPoint, $inputPoint);
+                $a = $this->factory->createArc($beginPoint, $endPoint);
                 $a->setId($arc->getId());
                 $new->addArc($a);
             }
@@ -82,24 +84,19 @@ class AdapterFromStore implements AdapterFromStoreInterface
         return $new;
     }
 
-    protected function getInputPoint(InputInterface $input)
+    public function getPoint(PointInterface $point)
     {
-        $new = $this->factory->createPoint($input->getName());
-        $new->setId($input->getId());
-        if (! is_null($input->getSettings())) {
-            $new->setSettings($input->getSettings());
+        if ($point->isInput()) {
+            $new = $this->factory->createInputPoint($point->getName());
+        } elseif ($point->isOutput()) {
+            $new = $this->factory->createOutputPoint($point->getName());
+        } elseif ($point->isTrigger()) {
+            $new = $this->factory->createTriggerPoint($point->getName());
+            $new->setSettings($point->getSettings());
+        } else {
+            throw new \Exception("Unknown point type");
         }
-
-        return $new;
-    }
-
-    protected function getOutputPoint(OutputInterface $output)
-    {
-        $new = $this->factory->createPoint($output->getName());
-        $new->setId($output->getId());
-        if (! is_null($output->getSettings())) {
-            $new->setSettings($output->getSettings());
-        }
+        $new->setId($point->getId());
 
         return $new;
     }
