@@ -226,7 +226,7 @@ class Decider implements DeciderInterface
     {
         // Retrieve instance
         $instance = $this->instance->getById($instanceId);
-         // set data
+        // set data
         $instance->setData($data);
         // Create a new engine for this instance
         $engine = new Engine($instance, $this->task);

@@ -13,7 +13,7 @@ namespace Geomagilles\FlowManager\Models\Point;
 use Geomagilles\GenericRepository\GenericRepository;
 
 use Geomagilles\FlowGraph\Factory\GraphFactory;
-use Geomagilles\FlowGraph\Point\PointInterface as GraphPointInterface;
+use Geomagilles\FlowGraph\Points\PointInterface as GraphPointInterface;
 
 use Geomagilles\FlowManager\Support\Adapters\FromStore\AdapterFromStore;
 use Geomagilles\FlowManager\Support\Adapters\FromStore\AdapterFromStoreInterface;
@@ -58,11 +58,6 @@ class PointRepository extends GenericRepository implements PointInterface
     public function isOutput()
     {
         return ($this->getType() == GraphFactory::OUTPUT_POINT);
-    }
-
-    public function isTrigger()
-    {
-        return ($this->getType() == GraphFactory::TRIGGER_POINT);
     }
 
     public function getBox()

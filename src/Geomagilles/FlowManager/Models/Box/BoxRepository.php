@@ -85,24 +85,14 @@ class BoxRepository extends GenericRepository implements BoxInterface
         $this->model->parentGraph()->associate($graph->getModel())->save();
     }
 
-    public function getPoints()
+    public function getInputPoints()
     {
-        return Point::wrap($this->model->points);
+        return Point::wrap($this->model->inputPoints);
     }
 
-    public function getInputs()
+    public function getOutputPoints()
     {
-        return Point::wrap($this->model->inputs);
-    }
-
-    public function getOutputs()
-    {
-        return Point::wrap($this->model->outputs);
-    }
-
-    public function getTriggers()
-    {
-        return Point::wrap($this->model->triggers);
+        return Point::wrap($this->model->outputPoints);
     }
 
     public function getBoxes()

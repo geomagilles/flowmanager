@@ -22,9 +22,9 @@ interface EngineInterface
     public function run();
 
     /**
-     * Fire triggers
+     * Fire output
      * @param mixed $boxId
-     * @param array $firedTriggers
+     * @param string $output
      */
-    public function fireTriggers($boxId, $firedTriggers);
+    public function fireOutput($boxId, $output);
 }

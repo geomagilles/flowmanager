@@ -37,13 +37,13 @@ interface BoxInterface extends GenericRepositoryInterface
      * Return Unit's output points
      * @return FlowManager\Models\Output\OutputInterface[]
      */
-    public function getOutputs();
+    public function getOutputPoints();
 
     /**
      * Return Unit's input points
      * @return FlowManager\Models\Input\InputInterface[]
      */
-    public function getInputs();
+    public function getInputPoints();
 
     /**
      * Return Graph's boxes (if graph)
@@ -68,16 +68,16 @@ interface BoxInterface extends GenericRepositoryInterface
     public function getSettings();
 
     /**
-     * Return Box's name
-     * @return string
-     */
-    public function getName();
-
-    /**
      * Set Box's settings
      * @param mixed $d
      */
     public function setSettings($d);
+
+    /**
+     * Return Box's name
+     * @return string
+     */
+    public function getName();
 
     /**
      * Set Box's name

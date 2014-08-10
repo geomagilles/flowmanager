@@ -41,14 +41,8 @@ class BoxEloquent extends Eloquent
         return $this->hasMany('Geomagilles\FlowManager\Models\Box\BoxEloquent', 'parent_graph_id');
     }
 
-    // points
-    public function points()
-    {
-        return $this->hasMany('Geomagilles\FlowManager\Models\Point\PointEloquent', 'box_id');
-    }
-
     // input points
-    public function inputs()
+    public function inputPoints()
     {
         return $this
                 ->hasMany('Geomagilles\FlowManager\Models\Point\PointEloquent', 'box_id')
@@ -56,19 +50,11 @@ class BoxEloquent extends Eloquent
     }
 
     // output points
-    public function outputs()
+    public function outputPoints()
     {
         return $this
                 ->hasMany('Geomagilles\FlowManager\Models\Point\PointEloquent', 'box_id')
                 ->where('type', '=', GraphFactory::OUTPUT_POINT);
-    }
-
-    // trigger points
-    public function triggers()
-    {
-        return $this
-                ->hasMany('Geomagilles\FlowManager\Models\Point\PointEloquent', 'box_id')
-                ->where('type', '=', GraphFactory::TRIGGER_POINT);
     }
 
     // arcs

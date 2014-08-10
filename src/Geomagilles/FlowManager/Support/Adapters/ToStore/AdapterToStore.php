@@ -13,10 +13,8 @@ namespace Geomagilles\FlowManager\Support\Adapters\ToStore;
 use Geomagilles\FlowGraph\Factory\GraphFactory;
 use Geomagilles\FlowGraph\Box\BoxInterface;
 use Geomagilles\FlowGraph\Arc\ArcInterface;
-use Geomagilles\FlowGraph\Point\PointInterface;
-use Geomagilles\FlowGraph\Point\InputPoint\InputPointInterface;
-use Geomagilles\FlowGraph\Point\OutputPoint\OutputPointInterface;
-use Geomagilles\FlowGraph\Point\TriggerPoint\TriggerPointInterface;
+use Geomagilles\FlowGraph\Points\InputPointInterface;
+use Geomagilles\FlowGraph\Points\OutputPointInterface;
 
 use Geomagilles\FlowManager\Models\Box\BoxFacade as Box;
 use Geomagilles\FlowManager\Models\Arc\ArcFacade as Arc;
@@ -46,15 +44,11 @@ class AdapterToStore implements AdapterToStoreInterface
 
         // create input points
         foreach ($box->getInputPoints() as $inputPoint) {
-            $this->savePoint($inputPoint);
+            $this->saveInputPoint($inputPoint);
         }
         // create output points
         foreach ($box->getOutputPoints() as $outputPoint) {
-            $this->savePoint($outputPoint);
-        }
-        // create trigger points
-        foreach ($box->getTriggerPoints() as $triggerPoint) {
-            $this->savePoint($triggerPoint);
+            $this->saveOutputPoint($outputPoint);
         }
 
         // save recursively if Graph
@@ -83,22 +77,26 @@ class AdapterToStore implements AdapterToStoreInterface
         return $new;
     }
 
-    public function savePoint(PointInterface &$point)
+    protected function saveInputPoint(InputPointInterface &$point)
     {
-        $data = array();
-        if ($point->isInput()) {
-            $data['type'] = GraphFactory::INPUT_POINT;
-        } elseif ($point->isOutput()) {
-            $data['type'] = GraphFactory::OUTPUT_POINT;
-        } elseif ($point->isTrigger()) {
-            $data['type'] = GraphFactory::TRIGGER_POINT;
-            $data['settings'] = json_encode($point->getSettings());
-        } else {
-            throw new \Exception("Unknown point type");
-        }
-        $data['name'] = $point->getName();
-        $data['boxId'] = $point->getBox()->getId();
+        $data = array(
+            'type'  => GraphFactory::INPUT_POINT,
+            'name'  => $point->getName(),
+            'boxId' => $point->getBox()->getId()
+        );
+        $new = Point::create($data);
+        $point->setId($new->getId());
 
+        return $new;
+    }
+
+    protected function saveOutputPoint(OutputPointInterface &$point)
+    {
+        $data = array(
+            'type'  => GraphFactory::OUTPUT_POINT,
+            'name'  => $point->getName(),
+            'boxId' => $point->getBox()->getId()
+        );
         $new = Point::create($data);
         $point->setId($new->getId());
 

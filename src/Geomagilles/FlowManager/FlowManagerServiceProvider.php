@@ -10,6 +10,7 @@
 
 namespace Geomagilles\FlowManager;
 
+use Config;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan as Artisan;
 
@@ -42,11 +43,11 @@ class FlowManagerServiceProvider extends ServiceProvider
 
         // commands
         
-        $this->app->bind('geomagilles/flowmanager::flow.decider', function($app) {
+        $this->app->bind('geomagilles/flowmanager::flow.decider', function ($app) {
             return new FlowDeciderCommand();
         });
         
-        $this->app->bind('geomagilles/flowmanager::flow.worker', function($app) {
+        $this->app->bind('geomagilles/flowmanager::flow.worker', function ($app) {
             return new FlowWorkerCommand();
         });
         
@@ -73,19 +74,23 @@ class FlowManagerServiceProvider extends ServiceProvider
 
         $this->app->bindShared('Geomagilles\FlowManager\Tasks\TaskInterface', function ($app) {
 
-            if (false !== ini_get('xdebug.max_nesting_level')) {
-                ini_set('xdebug.max_nesting_level', 50000);
-            }
             // Once we have an instance of the manager, we will register the various
             // resolvers for the job connectors. These connectors are responsible for
             // creating the classes that accept job configs and instantiate jobs.
             $manager = new TaskManager($app);
 
             $manager->addConnector('sync', function () {
+                if (false !== ini_get('xdebug.max_nesting_level')) {
+                    ini_set('xdebug.max_nesting_level', 5000);
+                }
+                
                 return new SyncConnector;
             });
     
             $manager->addConnector('queue', function () {
+                if ((Config::get('queue.default') == 'sync') && (false !== ini_get('xdebug.max_nesting_level'))) {
+                    ini_set('xdebug.max_nesting_level', 5000);
+                }
                 return new QueueConnector;
             });
     
@@ -103,6 +108,8 @@ class FlowManagerServiceProvider extends ServiceProvider
         $this->app->bind('Geomagilles\FlowManager\Models\Point\PointInterface', 'Geomagilles\FlowManager\Models\Point\PointRepository');
 
         $this->app->bind('Geomagilles\FlowManager\Models\Instance\InstanceInterface', 'Geomagilles\FlowManager\Models\Instance\InstanceRepository');
+
+        $this->app->bind('Geomagilles\FlowManager\Models\Trigger\TriggerInterface', 'Geomagilles\FlowManager\Models\Trigger\TriggerRepository');
     }
 
     /**
@@ -119,7 +126,8 @@ class FlowManagerServiceProvider extends ServiceProvider
             'Geomagilles\FlowManager\Models\Arc\ArcInterface',
             'Geomagilles\FlowManager\Models\Box\BoxInterface',
             'Geomagilles\FlowManager\Models\Point\PointInterface',
-            'Geomagilles\FlowManager\Models\Instance\InstanceInterface'
+            'Geomagilles\FlowManager\Models\Instance\InstanceInterface',
+            'Geomagilles\FlowManager\Models\Trigger\TriggerInterface'
         );
     }
 }

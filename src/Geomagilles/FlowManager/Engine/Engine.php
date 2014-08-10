@@ -26,6 +26,7 @@ class Engine implements EngineInterface
 {
     protected $engine;
     protected $instance;
+    protected $jobEvents;
 
     public function __construct(
         InstanceInterface $instance,
@@ -44,32 +45,18 @@ class Engine implements EngineInterface
         $this->engine->setData($this->instance->getData());
         $this->engine->setState($this->instance->getState());
 
-        // Add listener on firing job
+        // Store each fired jobs
         $fire = function (BoxEvent $event) {
-            $p = Payload::create([]);
-            $p->instanceId = $this->instance->getId();
-            $p->job = $event->getBox()->getJob();
-            $p->data = $event->getData();
-            $p->boxId = $event->getBox()->getId();
-            $p->boxType = $event->getBox()->getType();
-            $this->task->forWorker($p);
+            $this->jobEvents[] = $event;
         };
-        $dispatcher->addListener(BoxEvent::BEFORE_JOB, $fire);
+        $dispatcher->addListener(BoxEvent::AFTER_JOB, $fire);
         
-        // Add listener on updating state
-        $save = function (GraphEvent $event) {
-            $this->instance->setData($event->getData());
-            $this->instance->setState($event->getState());
-            $this->instance->save();
-        };
-        $dispatcher->addListener(GraphEvent::STATE_UPDATED, $save);
-        
-        // Add listener on reaching end component
+        // Interrupt if an End box is reached
         $end = function (GraphEvent $event) {
             $this->instance->setStatus(EngineStatus::FINISHED);
             $this->instance->save();
         };
-        $dispatcher->addListener(GraphEvent::END, $end);
+        $dispatcher->addListener(GraphEvent::END_REACH, $end);
     }
 
     public function fireOutput($boxId, $output)
@@ -81,18 +68,27 @@ class Engine implements EngineInterface
         $this->instance->setState($this->engine->getState());
     }
 
-    public function fireTriggers($boxId, $firedTriggers)
-    {
-        // apply triggers
-        foreach ($firedTriggers as $name) {
-            $this->engine->fireTrigger($boxId, $name);
-        }
-        // update instance state
-        $this->instance->setState($this->engine->getState());
-    }
-
     public function run()
     {
+        // empty jobs
+        $this->jobEvents = array();
+        
+        // run engine
         $this->engine->run();
+        
+        // save new state
+        $this->instance->setState($this->engine->getState());
+        $this->instance->save();
+        
+        // do jobs
+        foreach ($this->jobEvents as $event) {
+            $p = Payload::create([]);
+            $p->instanceId = $this->instance->getId();
+            $p->job = $event->getBox()->getJob();
+            $p->data = $event->getData();
+            $p->boxId = $event->getBox()->getId();
+            $p->boxType = $event->getBox()->getType();
+            $this->task->forWorker($p);
+        }
     }
 }

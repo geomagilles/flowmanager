@@ -40,9 +40,18 @@ class AdapterFromStore implements AdapterFromStoreInterface
         // add settings
         $new->setSettings($box->getSettings());
         
-        // add points
-        foreach ($box->getPoints() as $point) {
-            $new->addPoint($this->getPoint($point));
+        // add input points
+        foreach ($box->getInputPoints() as $point) {
+            $p = $this->factory->createInputPoint($point->getName());
+            $p->setId($point->getId());
+            $new->addInputPoint($p);
+        }
+
+        // add output points
+        foreach ($box->getOutputPoints() as $point) {
+            $p = $this->factory->createOutputPoint($point->getName());
+            $p->setId($point->getId());
+            $new->addOutputPoint($p);
         }
 
         // if Graph: get recursively
@@ -59,8 +68,6 @@ class AdapterFromStore implements AdapterFromStoreInterface
                 $beginBox = $new->getBox($beginPoint->getBox()->getName());
                 if ($beginPoint->isOutput()) {
                     $beginPoint = $beginBox->getOutputPoint($beginPoint->getName());
-                } elseif ($beginPoint->isTrigger()) {
-                    $beginPoint = $beginBox->getTriggerPoint($beginPoint->getName());
                 } else {
                     throw new \Exception("Unable to find begin point");
                 }
@@ -80,23 +87,6 @@ class AdapterFromStore implements AdapterFromStoreInterface
                 $new->addArc($a);
             }
         }
-
-        return $new;
-    }
-
-    public function getPoint(PointInterface $point)
-    {
-        if ($point->isInput()) {
-            $new = $this->factory->createInputPoint($point->getName());
-        } elseif ($point->isOutput()) {
-            $new = $this->factory->createOutputPoint($point->getName());
-        } elseif ($point->isTrigger()) {
-            $new = $this->factory->createTriggerPoint($point->getName());
-            $new->setSettings($point->getSettings());
-        } else {
-            throw new \Exception("Unknown point type");
-        }
-        $new->setId($point->getId());
 
         return $new;
     }
